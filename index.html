@@ -238,7 +238,7 @@
                             <div id="costBreakdown" class="space-y-2 text-sm"></div>
                         </div>
                         <div class="bg-gray-50 p-4 rounded-lg">
-                            <h3 class="text-xl font-semibold mb-3 text-gray-700">Key Metrics</h3>
+                            <h3 class="text-xl font-semibold mb-3 text-gray-700">Key Loan Metrics</h3>
                             <div id="loanSummary" class="space-y-2 text-sm"></div>
                         </div>
                     </div>
@@ -421,7 +421,6 @@ document.addEventListener('DOMContentLoaded', function () {
         div.querySelector('.removeScenario').addEventListener('click', (e) => {
             if (elements.scenariosContainer.children.length > 1) {
                 e.target.closest('.border').remove();
-                // Renumber scenarios
                 elements.scenariosContainer.querySelectorAll('label.font-bold').forEach((label, index) => {
                     label.textContent = `Scenario #${index + 1}`;
                 });
@@ -609,6 +608,8 @@ document.addEventListener('DOMContentLoaded', function () {
             
             let cumulativePreEmiInterest = 0;
             let disbursedAmount = 0;
+            let totalEmiPaid = 0;
+            let totalOtherCosts = 0;
 
             for(let m = 1; m <= investmentHorizonMonths; m++) {
                 const currentDate = new Date(investmentStartDate);
@@ -635,7 +636,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         monthData.emi = fullEMI;
                     }
                 }
-                
+                totalEmiPaid += monthData.emi;
+
                 // RENT
                 const rentStartDate = new Date(inputs.rentStartYear, inputs.rentStartMonth - 1, 1);
                 if (currentDate >= rentStartDate && inputs.willRent === 'yes') {
@@ -655,6 +657,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (currentMonth === 1 && currentDate > possessionDate) monthData.otherCosts += propertyCost * (propertyTax / 100);
                 
                 if (m === investmentHorizonMonths) monthData.event = 'Sale';
+                totalOtherCosts += monthData.otherCosts;
 
                 monthData.net = monthData.rent - monthData.emi - monthData.otherCosts;
                 monthlyBreakdown.push(monthData);
@@ -675,8 +678,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const irr = calculateIRR(cashFlows) || 0;
             const netProfit = cashFlows.reduce((a, b) => a + b, 0);
             const cagr = netProfit > -initialInvestment ? Math.pow((initialInvestment + netProfit) / initialInvestment, 1 / (investmentHorizonMonths/12)) - 1 : -1;
+            const salePrice = scenario.salePricePerSqFt * area;
+            const profitPercentage = (netProfit / (initialInvestment + totalEmiPaid + totalOtherCosts)) * 100;
 
-            scenarioResults.push({ ...scenario, irr: irr * 100, netProfit, cagr: cagr * 100, monthlyBreakdown, totalPreEMIPaid: cumulativePreEmiInterest });
+            scenarioResults.push({ ...scenario, irr: irr * 100, netProfit, cagr: cagr * 100, monthlyBreakdown, totalPreEMIPaid: cumulativePreEmiInterest, totalEmiPaid, totalOtherCosts, salePrice, profitPercentage });
         }
         
         return {
@@ -690,18 +695,27 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayResults(results, inputs) {
         elements.scenarioResults.innerHTML = '';
         elements.scenarioSelectorForMonthly.innerHTML = '';
+        const format = (val) => val.toLocaleString('en-IN', { maximumFractionDigits: 0 });
 
         results.scenarios.forEach((s, index) => {
             const card = document.createElement('div');
             card.className = 'result-card bg-indigo-50 p-5 rounded-lg text-center border-l-4 border-indigo-500';
+            const overallAmountPaid = results.costs.initialInvestment + s.totalEmiPaid + s.totalOtherCosts;
             card.innerHTML = `
                 <h4 class="font-semibold text-lg text-indigo-800">Scenario #${index + 1}: Sell in ${months[s.exitMonth-1]} ${s.exitYear}</h4>
-                <p class="text-3xl font-bold text-indigo-600 my-2">${s.irr.toFixed(2)}%</p>
-                <p class="text-sm text-gray-600 font-medium">IRR</p>
+                <div class="text-center my-2">
+                    <p class="text-3xl font-bold text-indigo-600">${s.irr.toFixed(2)}%</p>
+                    <p class="text-sm text-gray-600 font-medium">IRR</p>
+                </div>
                 <hr class="my-3">
-                <div class="text-left text-sm space-y-1">
-                    <p><strong>Net Profit:</strong> ₹${s.netProfit.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-                    <p><strong>CAGR:</strong> ${s.cagr.toFixed(2)}%</p>
+                <div class="text-left text-xs space-y-1">
+                    <p><strong>Down Payment:</strong> ₹${format(results.costs.initialInvestment)}</p>
+                    <p><strong>Total EMI Paid:</strong> ₹${format(s.totalEmiPaid)}</p>
+                    <p><strong>Total Other Costs:</strong> ₹${format(s.totalOtherCosts)}</p>
+                    <p class="font-semibold"><strong>Overall Amount Paid:</strong> ₹${format(overallAmountPaid)}</p>
+                    <hr class="my-1 border-dashed">
+                    <p><strong>Sale Price:</strong> ₹${format(s.salePrice)}</p>
+                    <p class="font-bold text-green-700"><strong>Overall Profit:</strong> ₹${format(s.netProfit)} (${s.profitPercentage.toFixed(1)}%)</p>
                 </div>
             `;
             elements.scenarioResults.appendChild(card);
@@ -714,16 +728,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const { costs, loan } = results;
         elements.costBreakdown.innerHTML = `
-            <p><strong>Property Cost:</strong> ₹${costs.propertyCost.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-            <p><strong>Your Initial Investment:</strong> ₹${costs.initialInvestment.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-            <p><strong>Loan Amount:</strong> ₹${costs.loanAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-            <p class="text-gray-600"><strong>Govt. Charges (in ${months[inputs.registryMonth-1]} ${inputs.registryYear}):</strong> ₹${(costs.stampDuty + costs.regFee).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
+            <p><strong>Property Cost:</strong> ₹${format(costs.propertyCost)}</p>
+            <p><strong>Your Initial Investment:</strong> ₹${format(costs.initialInvestment)}</p>
+            <p><strong>Loan Amount:</strong> ₹${format(costs.loanAmount)}</p>
+            <p class="text-gray-600"><strong>Govt. Charges (in ${months[inputs.registryMonth-1]} ${inputs.registryYear}):</strong> ₹${format(costs.stampDuty + costs.regFee)}</p>
         `;
 
         const totalPreEMIPaid = results.scenarios.length > 0 ? results.scenarios[0].totalPreEMIPaid : 0;
         elements.loanSummary.innerHTML = `
-            <p><strong>Monthly EMI (Full):</strong> ₹${loan.fullEMI.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-            ${totalPreEMIPaid > 0 ? `<p class="text-red-600"><strong>Total Pre-EMI Paid:</strong> ₹${totalPreEMIPaid.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>` : ''}
+            <p><strong>Monthly EMI (Full):</strong> ₹${format(loan.fullEMI)}</p>
+            ${totalPreEMIPaid > 0 ? `<p class="text-red-600"><strong>Total Pre-EMI Paid:</strong> ₹${format(totalPreEMIPaid)}</p>` : ''}
         `;
         
         displayMonthlyCashFlow(results.scenarios[0].monthlyBreakdown);
