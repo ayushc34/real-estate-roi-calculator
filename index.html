@@ -36,33 +36,15 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .tooltip {
-            position: relative;
-            display: inline-block;
+        .feedback-message {
+            transition: opacity 0.5s ease-in-out;
+        }
+        .copy-btn {
             cursor: pointer;
+            transition: transform 0.2s;
         }
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 240px;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -120px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-        input:read-only {
-            background-color: #f3f4f6;
+        .copy-btn:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -74,213 +56,229 @@
             <p class="mt-2 text-lg text-gray-600">Make informed investment decisions with detailed cash flow and return analysis.</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="space-y-8">
             <!-- Inputs Section -->
-            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-bold mb-6 text-gray-700">Investment Inputs</h2>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-bold mb-6 text-gray-700 text-center">Step 1: Enter Your Investment Details</h2>
                 
-                <!-- Group A: Project Details -->
-                <div class="mb-6">
-                    <h3 class="input-group-title mb-4">A: Project & Purchase Details</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="propertyStatus" class="block text-sm font-medium text-gray-700">Property Status</label>
-                            <select id="propertyStatus" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                                <option value="Under-Construction">Under-Construction</option>
-                                <option value="Ready-to-Move">Ready-to-Move</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="state" class="block text-sm font-medium text-gray-700">State</label>
-                            <select id="state" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                                <option value="Maharashtra">Maharashtra</option>
-                                <option value="Karnataka">Karnataka</option>
-                                <option value="Delhi">Delhi</option>
-                                <option value="Haryana">Haryana</option>
-                                <option value="Telangana">Telangana</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="propertyArea" class="block text-sm font-medium text-gray-700">Property Area (sq. ft.)</label>
-                            <input type="number" id="propertyArea" value="1000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label for="bsp" class="block text-sm font-medium text-gray-700">Basic Sale Price (₹ per sq. ft.)</label>
-                            <input type="number" id="bsp" value="10000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                        </div>
-                         <div>
-                            <label for="otherCharges" class="block text-sm font-medium text-gray-700">Other Developer Charges (₹)</label>
-                            <input type="number" id="otherCharges" value="500000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group B: Financing & Tax -->
-                <div class="mb-6">
-                    <h3 class="input-group-title mb-4">B: Financing & Tax</h3>
-                    <div class="space-y-4">
-                         <div>
-                            <label for="downPayment" class="block text-sm font-medium text-gray-700">Down Payment (%)</label>
-                            <input type="number" id="downPayment" value="20" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label for="interestRate" class="block text-sm font-medium text-gray-700">Home Loan Interest Rate (%)</label>
-                            <input type="number" id="interestRate" value="8.5" step="0.1" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label for="loanTenure" class="block text-sm font-medium text-gray-700">Loan Tenure (Years)</label>
-                            <input type="number" id="loanTenure" value="20" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label for="taxSlab" class="block text-sm font-medium text-gray-700">Your Income Tax Slab (%)</label>
-                            <select id="taxSlab" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                                <option value="0.30">30%</option>
-                                <option value="0.20">20%</option>
-                                <option value="0.10">10%</option>
-                                <option value="0.05">5%</option>
-                                <option value="0">0% / No Tax</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group C: Construction & Post-Possession -->
-                <div class="mb-6">
-                    <h3 class="input-group-title mb-4">C: Timeline & Ongoing Costs</h3>
-                    <div id="clpSection" class="space-y-4">
-                        <div>
-                            <label for="constructionPeriod" class="block text-sm font-medium text-gray-700">Construction Period (Months)</label>
-                            <input type="number" id="constructionPeriod" value="36" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Disbursement Schedule</label>
-                            <textarea id="disbursementSchedule" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm" rows="4">3, 10
-9, 15
-18, 20
-36, 55</textarea>
-                            <p class="text-xs text-gray-500 mt-1">Format: month, cumulative_percentage (e.g., 3, 10). Each on a new line.</p>
-                        </div>
-                    </div>
-                     <div class="space-y-4 mt-4">
-                        <div>
-                            <label for="registryYear" class="block text-sm font-medium text-gray-700">Registry will be done in Year #</label>
-                            <input type="number" id="registryYear" value="4" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label for="willRent" class="block text-sm font-medium text-gray-700">Will property be rented out?</label>
-                             <select id="willRent" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                            </select>
-                        </div>
-                         <div id="rentInputs" class="space-y-4 p-4 bg-gray-50 rounded-md border">
-                             <div>
-                                <label for="rentStartYear" class="block text-sm font-medium text-gray-700">Rent can start from Year #</label>
-                                <input type="number" id="rentStartYear" value="4" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                             </div>
-                             <div>
-                                <label for="fitOutCost" class="block text-sm font-medium text-gray-700">One-time Fit-Out Cost (₹)</label>
-                                <input type="number" id="fitOutCost" value="200000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                             </div>
-                             <div>
-                                <label for="monthlyRent" class="block text-sm font-medium text-gray-700">Initial Monthly Rent (₹)</label>
-                                <input type="number" id="monthlyRent" value="35000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                             </div>
-                             <div>
-                                <label for="rentIncrease" class="block text-sm font-medium text-gray-700">Annual Rent Increase (%)</label>
-                                <input type="number" id="rentIncrease" value="5" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                             </div>
-                         </div>
-                         <div class="space-y-4 mt-4 p-4 bg-gray-50 rounded-md border">
-                            <label class="block text-sm font-bold text-gray-800">Maintenance & Property Tax</label>
-                            <div>
-                               <label for="advanceMaintenance" class="block text-sm font-medium text-gray-700">Advance Maintenance paid on Possession (Months)</label>
-                               <input type="number" id="advanceMaintenance" value="12" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Group A: Project Details -->
+                    <div class="mb-6">
+                        <h3 class="input-group-title mb-4">A: Project Details</h3>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label for="investmentYear" class="block text-sm font-medium text-gray-700">Invest Year</label>
+                                    <input type="number" id="investmentYear" value="2024" class="mt-1 block w-full p-2 border-gray-300 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="investmentMonth" class="block text-sm font-medium text-gray-700">Month</label>
+                                    <select id="investmentMonth" class="mt-1 block w-full p-2 border-gray-300 rounded-md"></select>
+                                </div>
                             </div>
                             <div>
-                               <label for="monthlyMaintenance" class="block text-sm font-medium text-gray-700">Recurring Monthly Maintenance (₹)</label>
-                               <input type="number" id="monthlyMaintenance" value="5000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                                <label for="propertyStatus" class="block text-sm font-medium text-gray-700">Property Status</label>
+                                <select id="propertyStatus" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></select>
                             </div>
                             <div>
-                                <label for="propertyTax" class="block text-sm font-medium text-gray-700">Annual Property Tax (% of Property Cost)</label>
-                                <input type="number" id="propertyTax" value="0.2" step="0.1" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                                <label for="state" class="block text-sm font-medium text-gray-700">State</label>
+                                <select id="state" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></select>
                             </div>
-                         </div>
+                            <div>
+                                <label for="propertyArea" class="block text-sm font-medium text-gray-700">Property Area (sq. ft.)</label>
+                                <input type="number" id="propertyArea" value="1000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label for="bsp" class="block text-sm font-medium text-gray-700">Basic Sale Price (₹ per sq. ft.)</label>
+                                <input type="number" id="bsp" value="10000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                            </div>
+                             <div>
+                                <label for="otherCharges" class="block text-sm font-medium text-gray-700">Other Developer Charges (₹)</label>
+                                <input type="number" id="otherCharges" value="500000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group B: Financing & Tax -->
+                    <div class="mb-6">
+                        <h3 class="input-group-title mb-4">B: Financing & Tax</h3>
+                        <div class="space-y-4">
+                             <div>
+                                <label for="downPayment" class="block text-sm font-medium text-gray-700">Down Payment (%)</label>
+                                <input type="number" id="downPayment" value="20" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label for="interestRate" class="block text-sm font-medium text-gray-700">Home Loan Interest Rate (%)</label>
+                                <input type="number" id="interestRate" value="8.5" step="0.1" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label for="loanTenure" class="block text-sm font-medium text-gray-700">Loan Tenure (Years)</label>
+                                <input type="number" id="loanTenure" value="20" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label for="taxSlab" class="block text-sm font-medium text-gray-700">Your Income Tax Slab (%)</label>
+                                <select id="taxSlab" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group C: Construction & Post-Possession -->
+                    <div class="mb-6">
+                        <h3 class="input-group-title mb-4">C: Timeline & Costs</h3>
+                        <div class="space-y-4">
+                            <div id="clpSection" class="space-y-4">
+                                <div>
+                                    <label for="constructionPeriod" class="block text-sm font-medium text-gray-700">Construction Period (Months)</label>
+                                    <input type="number" id="constructionPeriod" value="36" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Disbursement Schedule</label>
+                                    <textarea id="disbursementSchedule" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm" rows="4"></textarea>
+                                    <p class="text-xs text-gray-500 mt-1">Format: month, cumulative_%. New line for each.</p>
+                                </div>
+                            </div>
+                             <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label for="registryYear" class="block text-sm font-medium text-gray-700">Registry Year</label>
+                                    <input type="number" id="registryYear" value="2028" class="mt-1 block w-full p-2 border-gray-300 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="registryMonth" class="block text-sm font-medium text-gray-700">Month</label>
+                                    <select id="registryMonth" class="mt-1 block w-full p-2 border-gray-300 rounded-md"></select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="willRent" class="block text-sm font-medium text-gray-700">Will property be rented out?</label>
+                                 <select id="willRent" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></select>
+                            </div>
+                             <div id="rentInputs" class="space-y-4 p-3 bg-gray-50 rounded-md border">
+                                 <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label for="rentStartYear" class="block text-sm font-medium text-gray-700">Rent Start Yr</label>
+                                        <input type="number" id="rentStartYear" value="2028" class="mt-1 block w-full p-2 border-gray-300 rounded-md">
+                                    </div>
+                                    <div>
+                                        <label for="rentStartMonth" class="block text-sm font-medium text-gray-700">Month</label>
+                                        <select id="rentStartMonth" class="mt-1 block w-full p-2 border-gray-300 rounded-md"></select>
+                                    </div>
+                                 </div>
+                                 <div>
+                                    <label for="fitOutCost" class="block text-sm font-medium text-gray-700">One-time Fit-Out Cost (₹)</label>
+                                    <input type="number" id="fitOutCost" value="200000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                                 </div>
+                                 <div>
+                                    <label for="monthlyRent" class="block text-sm font-medium text-gray-700">Initial Monthly Rent (₹)</label>
+                                    <input type="number" id="monthlyRent" value="35000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                                 </div>
+                                 <div>
+                                    <label for="rentIncrease" class="block text-sm font-medium text-gray-700">Annual Rent Increase (%)</label>
+                                    <input type="number" id="rentIncrease" value="5" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Group D: Exit Scenarios -->
+                    <div class="mb-6">
+                        <h3 class="input-group-title mb-4">D: Exit & Other Costs</h3>
+                        <div class="space-y-4">
+                             <div class="space-y-4 p-3 bg-gray-50 rounded-md border">
+                                <label class="block text-sm font-bold text-gray-800">Maintenance & Property Tax</label>
+                                <div>
+                                   <label for="advanceMaintenance" class="block text-sm font-medium text-gray-700">Advance Maintenance (Months)</label>
+                                   <input type="number" id="advanceMaintenance" value="12" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                                </div>
+                                <div>
+                                   <label for="monthlyMaintenance" class="block text-sm font-medium text-gray-700">Monthly Maintenance (₹)</label>
+                                   <input type="number" id="monthlyMaintenance" value="5000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                                </div>
+                                <div>
+                                    <label for="propertyTax" class="block text-sm font-medium text-gray-700">Annual Property Tax (% of Cost)</label>
+                                    <input type="number" id="propertyTax" value="0.2" step="0.1" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm">
+                                </div>
+                             </div>
+                             <div class="space-y-2 mt-4">
+                                 <label class="block text-sm font-bold text-gray-800">Investment Exit Scenarios</label>
+                                 <p class="text-xs text-gray-500">Define one or more exit strategies to compare returns.</p>
+                                 <div id="exitScenariosContainer" class="space-y-3"></div>
+                                 <button id="addScenario" class="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium">+ Add Scenario</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Group D: Exit Scenarios -->
-                <div class="mb-6">
-                    <h3 class="input-group-title mb-4">D: Investment Exit Scenarios</h3>
-                     <div class="space-y-4">
-                         <div id="exitScenariosContainer" class="space-y-2">
-                             <!-- Scenarios will be added here -->
-                         </div>
-                         <button id="addScenario" class="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium">+ Add Scenario</button>
+                <div class="mt-6 text-center">
+                    <button id="calculateBtn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300">
+                        Calculate ROI
+                    </button>
+                     <div class="mt-4 flex justify-center space-x-2">
+                        <button id="saveBtn" class="bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 transition duration-300 text-sm">
+                            Save Inputs
+                        </button>
+                        <button id="loadBtn" class="bg-gray-600 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300 text-sm">
+                            Load Last Saved
+                        </button>
                     </div>
+                    <p id="feedbackMessage" class="text-center text-sm text-green-700 font-medium opacity-0 feedback-message h-4 mt-2"></p>
                 </div>
-
-                <button id="calculateBtn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300">
-                    Calculate ROI
-                </button>
             </div>
 
             <!-- Results Section -->
-            <div class="lg:col-span-2">
-                 <div id="resultsDashboard" class="bg-white p-6 rounded-xl shadow-lg min-h-full" style="display: none;">
-                    <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Investment Dashboard</h2>
-                    
-                    <div id="loader" class="flex justify-center items-center py-16" style="display: none;"><div class="loader"></div></div>
-                    
-                    <div id="resultsContent">
-                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8" id="scenarioResults"></div>
+            <div id="resultsDashboard" class="bg-white p-6 rounded-xl shadow-lg" style="display: none;">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4 text-center">Step 2: Investment Analysis</h2>
+                
+                <div id="loader" class="flex justify-center items-center py-16" style="display: none;"><div class="loader"></div></div>
+                
+                <div id="resultsContent">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8" id="scenarioResults"></div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <h3 class="text-xl font-semibold mb-3 text-gray-700">Cost & Loan Summary</h3>
-                                <div id="costBreakdown" class="space-y-2 text-sm"></div>
-                            </div>
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <h3 class="text-xl font-semibold mb-3 text-gray-700">Key Metrics</h3>
-                                <div id="loanSummary" class="space-y-2 text-sm"></div>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-xl font-semibold mb-3 text-gray-700">Cost & Loan Summary</h3>
+                            <div id="costBreakdown" class="space-y-2 text-sm"></div>
                         </div>
-
-                        <div class="mt-8">
-                             <h3 class="text-xl font-semibold mb-3 text-gray-700">Year-on-Year Cash Flow for 
-                                <select id="scenarioSelector" class="ml-2 p-1 text-sm border border-gray-300 rounded-md"></select>
-                             </h3>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-100">
-                                        <tr>
-                                            <th class="px-2 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Year</th>
-                                            <th class="px-2 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Inflows</th>
-                                            <th class="px-2 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Outflows</th>
-                                            <th class="px-2 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Net Flow</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="cashFlowTable" class="bg-white divide-y divide-gray-200"></tbody>
-                                </table>
-                            </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-xl font-semibold mb-3 text-gray-700">Key Metrics</h3>
+                            <div id="loanSummary" class="space-y-2 text-sm"></div>
                         </div>
                     </div>
-                 </div>
-                 <div id="welcomeMessage" class="flex items-center justify-center bg-white p-6 rounded-xl shadow-lg min-h-full">
-                     <div class="text-center">
-                         <svg class="mx-auto h-12 w-12 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                         </svg>
-                         <h3 class="mt-2 text-xl font-medium text-gray-900">Ready to Analyze?</h3>
-                         <p class="mt-1 text-gray-500">Enter your investment details on the left and click "Calculate ROI" to see your personalized dashboard.</p>
-                     </div>
-                 </div>
+                    
+                    <div class="mt-8">
+                         <div class="flex items-center justify-between mb-3">
+                             <h3 class="text-xl font-semibold text-gray-700">Month-on-Month Cash Flow for 
+                                <select id="scenarioSelectorForMonthly" class="ml-2 p-1 text-sm border border-gray-300 rounded-md"></select>
+                             </h3>
+                             <button id="copyMonthlyDataBtn" title="Copy table data to clipboard" class="copy-btn text-gray-500 hover:text-indigo-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                             </button>
+                         </div>
+                        <div class="overflow-y-auto max-h-96">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-100 sticky top-0">
+                                    <tr>
+                                        <th class="px-2 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Month</th>
+                                        <th class="px-2 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Event</th>
+                                        <th class="px-2 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">EMI/Pre-EMI</th>
+                                        <th class="px-2 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">Rent</th>
+                                        <th class="px-2 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">Other Costs</th>
+                                        <th class="px-2 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">Net Flow</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="monthlyCashFlowTable" class="bg-white divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const STORAGE_KEY = 'realEstateRoiInputs_v5';
+
     // --- DATA & CONFIG ---
     const stampDutyData = {
         'Maharashtra': { 'duty': 0.06, 'reg': 0.01 },
@@ -289,39 +287,95 @@ document.addEventListener('DOMContentLoaded', function () {
         'Haryana': { 'duty': 0.07, 'reg': 0.01 },
         'Telangana': { 'duty': 0.04, 'reg': 0.005 },
     };
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     // --- DOM ELEMENT REFERENCES ---
     const elements = {
+        investmentMonth: document.getElementById('investmentMonth'),
+        registryMonth: document.getElementById('registryMonth'),
+        rentStartMonth: document.getElementById('rentStartMonth'),
         propertyStatus: document.getElementById('propertyStatus'),
-        clpSection: document.getElementById('clpSection'),
+        state: document.getElementById('state'),
+        taxSlab: document.getElementById('taxSlab'),
         willRent: document.getElementById('willRent'),
+        clpSection: document.getElementById('clpSection'),
         rentInputs: document.getElementById('rentInputs'),
         scenariosContainer: document.getElementById('exitScenariosContainer'),
         addScenarioBtn: document.getElementById('addScenario'),
         calculateBtn: document.getElementById('calculateBtn'),
-        welcomeMessage: document.getElementById('welcomeMessage'),
+        saveBtn: document.getElementById('saveBtn'),
+        loadBtn: document.getElementById('loadBtn'),
+        feedbackMessage: document.getElementById('feedbackMessage'),
         resultsDashboard: document.getElementById('resultsDashboard'),
         loader: document.getElementById('loader'),
         resultsContent: document.getElementById('resultsContent'),
         scenarioResults: document.getElementById('scenarioResults'),
         costBreakdown: document.getElementById('costBreakdown'),
         loanSummary: document.getElementById('loanSummary'),
-        scenarioSelector: document.getElementById('scenarioSelector'),
-        cashFlowTable: document.getElementById('cashFlowTable'),
-        propertyArea: document.getElementById('propertyArea')
+        scenarioSelectorForMonthly: document.getElementById('scenarioSelectorForMonthly'),
+        monthlyCashFlowTable: document.getElementById('monthlyCashFlowTable'),
+        copyMonthlyDataBtn: document.getElementById('copyMonthlyDataBtn'),
+        disbursementSchedule: document.getElementById('disbursementSchedule')
     };
     
+    let allScenarioResults = [];
+
     // --- UI EVENT LISTENERS ---
     elements.propertyStatus.addEventListener('change', toggleClpSection);
     elements.willRent.addEventListener('change', toggleRentInputs);
     elements.addScenarioBtn.addEventListener('click', () => addScenarioRow());
     elements.calculateBtn.addEventListener('click', runSimulation);
+    elements.saveBtn.addEventListener('click', saveInputs);
+    elements.loadBtn.addEventListener('click', loadInputs);
+    elements.copyMonthlyDataBtn.addEventListener('click', copyMonthlyDataToClipboard);
 
     // --- INITIALIZATION ---
-    addScenarioRow(7, 15000);
-    addScenarioRow(12, 22000);
-    toggleClpSection();
-    toggleRentInputs();
+    function initialize() {
+        populateSelects();
+        loadInputs();
+        toggleClpSection();
+        toggleRentInputs();
+    }
+    
+    function populateSelects() {
+        // Populate static selects
+        const staticSelects = {
+            propertyStatus: ['Under-Construction', 'Ready-to-Move'],
+            state: Object.keys(stampDutyData),
+            taxSlab: [['30%', 0.30], ['20%', 0.20], ['10%', 0.10], ['5%', 0.05], ['0% / No Tax', 0]],
+            willRent: [['Yes', 'yes'], ['No', 'no']]
+        };
+        for (const [elId, options] of Object.entries(staticSelects)) {
+            const selectEl = elements[elId];
+            if(selectEl) {
+                selectEl.innerHTML = '';
+                options.forEach(opt => {
+                    const option = document.createElement('option');
+                    if (Array.isArray(opt)) {
+                        option.textContent = opt[0];
+                        option.value = opt[1];
+                    } else {
+                        option.textContent = opt;
+                        option.value = opt;
+                    }
+                    selectEl.appendChild(option);
+                });
+            }
+        }
+        // Populate month selects
+        const monthSelects = [elements.investmentMonth, elements.registryMonth, elements.rentStartMonth];
+        monthSelects.forEach(selectEl => {
+            if(selectEl){
+                selectEl.innerHTML = '';
+                months.forEach((month, index) => {
+                    const option = document.createElement('option');
+                    option.textContent = month;
+                    option.value = index + 1;
+                    selectEl.appendChild(option);
+                });
+            }
+        });
+    }
 
     // --- UI HELPER FUNCTIONS ---
     function toggleClpSection() {
@@ -332,65 +386,169 @@ document.addEventListener('DOMContentLoaded', function () {
         elements.rentInputs.style.display = elements.willRent.value === 'yes' ? 'block' : 'none';
     }
 
-    function addScenarioRow(duration = 10, salePricePerSqFt = 20000) {
+    function addScenarioRow(year = 2030, month = 6, salePricePerSqFt = 20000) {
+        const scenarioCount = elements.scenariosContainer.children.length + 1;
         const div = document.createElement('div');
-        div.className = 'flex items-center space-x-2';
+        div.className = 'p-3 bg-gray-50 rounded-md border';
         div.innerHTML = `
-            <input type="number" title="Holding Duration (Years)" placeholder="Duration (Yrs)" value="${duration}" class="w-1/3 p-2 border border-gray-300 rounded-md shadow-sm">
-            <input type="number" title="Sale Price (₹ per sq. ft.)" placeholder="Sale Price (₹/sq.ft)" value="${salePricePerSqFt}" class="w-2/3 p-2 border border-gray-300 rounded-md shadow-sm">
-            <button class="removeScenario text-red-500 hover:text-red-700 font-bold">&times;</button>
+            <label class="block text-sm font-bold text-gray-800 mb-2">Scenario #${scenarioCount}</label>
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600">Exit Year</label>
+                    <input type="number" value="${year}" class="mt-1 block w-full p-2 border-gray-300 rounded-md text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600">Exit Month</label>
+                    <select class="exitMonthSelect mt-1 block w-full p-2 border-gray-300 rounded-md text-sm"></select>
+                </div>
+            </div>
+            <div>
+                 <label class="block text-xs font-medium text-gray-600">Sale Price (₹/sq.ft)</label>
+                 <input type="number" value="${salePricePerSqFt}" class="mt-1 block w-full p-2 border-gray-300 rounded-md text-sm">
+            </div>
+            <button class="removeScenario text-red-500 hover:text-red-700 font-bold text-lg float-right -mt-8 mr-1">&times;</button>
         `;
+        const monthSelect = div.querySelector('.exitMonthSelect');
+        months.forEach((m, i) => {
+            const opt = document.createElement('option');
+            opt.value = i + 1;
+            opt.textContent = m;
+            if ((i + 1) === month) opt.selected = true;
+            monthSelect.appendChild(opt);
+        });
+        
         elements.scenariosContainer.appendChild(div);
         div.querySelector('.removeScenario').addEventListener('click', (e) => {
-            if (elements.scenariosContainer.children.length > 1) e.target.parentElement.remove();
+            if (elements.scenariosContainer.children.length > 1) {
+                e.target.closest('.border').remove();
+                // Renumber scenarios
+                elements.scenariosContainer.querySelectorAll('label.font-bold').forEach((label, index) => {
+                    label.textContent = `Scenario #${index + 1}`;
+                });
+            }
         });
+    }
+    
+    // --- DATA PERSISTENCE ---
+    function saveInputs() {
+        try {
+            const inputs = getInputs();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(inputs));
+            showFeedback('Inputs Saved Successfully!');
+        } catch (error) {
+            console.error("Error saving inputs:", error);
+            showFeedback('Error: Could not save inputs.', true);
+        }
+    }
+
+    function loadInputs() {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (!savedData) {
+            setDefaultInputs();
+            return;
+        }
+        try {
+            const inputs = JSON.parse(savedData);
+            Object.keys(inputs).forEach(key => {
+                const el = document.getElementById(key);
+                if (el) {
+                     if (key === 'disbursementSchedule') {
+                        el.value = inputs[key].map(d => `${d.month}, ${d.perc * 100}`).join('\n');
+                    } else {
+                        el.value = inputs[key];
+                    }
+                }
+            });
+            
+            elements.scenariosContainer.innerHTML = '';
+            if (inputs.scenarios && inputs.scenarios.length > 0) {
+                inputs.scenarios.forEach(s => addScenarioRow(s.exitYear, s.exitMonth, s.salePricePerSqFt));
+            } else {
+                 addScenarioRow();
+            }
+            toggleClpSection();
+            toggleRentInputs();
+            showFeedback('Loaded last saved inputs.');
+
+        } catch (error) {
+            console.error("Error loading inputs:", error);
+            localStorage.removeItem(STORAGE_KEY);
+            setDefaultInputs();
+            showFeedback('Error loading data. Reset to defaults.', true);
+        }
+    }
+
+    function setDefaultInputs() {
+        if (elements.scenariosContainer.children.length === 0) {
+             addScenarioRow(2031, 6, 15000);
+             addScenarioRow(2036, 6, 22000);
+        }
+        elements.disbursementSchedule.value = "3, 10\n9, 25\n18, 45\n36, 100";
+        document.getElementById('investmentMonth').value = '1';
+        document.getElementById('registryMonth').value = '1';
+        document.getElementById('rentStartMonth').value = '1';
+    }
+    
+    function showFeedback(message, isError = false) {
+        const msgEl = elements.feedbackMessage;
+        msgEl.textContent = message;
+        msgEl.className = `feedback-message text-center text-sm font-medium h-4 ${isError ? 'text-red-700' : 'text-green-700'}`;
+        msgEl.style.opacity = 1;
+        setTimeout(() => {
+            msgEl.style.opacity = 0;
+        }, 3000);
     }
 
     // --- INPUT GATHERING ---
     function getInputs() {
-        const getVal = (id, isFloat = true) => (isFloat ? parseFloat : parseInt)(document.getElementById(id).value);
+        const getVal = (id, isFloat = true) => (parseFloat(document.getElementById(id).value) || 0);
+        const scenarios = Array.from(elements.scenariosContainer.children).map(div => ({
+            exitYear: parseInt(div.querySelector('input[type=number]').value) || 0,
+            exitMonth: parseInt(div.querySelector('select').value) || 0,
+            salePricePerSqFt: parseFloat(div.querySelectorAll('input[type=number]')[1].value) || 0
+        }));
+
         return {
+            investmentYear: getVal('investmentYear', false),
+            investmentMonth: getVal('investmentMonth', false),
             status: document.getElementById('propertyStatus').value,
             state: document.getElementById('state').value,
             area: getVal('propertyArea'),
             bsp: getVal('bsp'),
             otherCharges: getVal('otherCharges'),
-            downPaymentPerc: getVal('downPayment') / 100,
-            interestRate: getVal('interestRate') / 100,
+            downPayment: getVal('downPayment'),
+            interestRate: getVal('interestRate'),
             loanTenure: getVal('loanTenure', false),
-            taxSlab: getVal('taxSlab'),
             constructionPeriod: getVal('constructionPeriod', false),
-            disbursementSchedule: document.getElementById('disbursementSchedule').value.trim().split('\n').map(line => {
+            disbursementSchedule: document.getElementById('disbursementSchedule').value.trim().split('\n').filter(Boolean).map(line => {
                 const [month, perc] = line.split(',');
                 return { month: parseInt(month.trim()), perc: parseFloat(perc.trim()) / 100 };
             }),
             registryYear: getVal('registryYear', false),
-            willRent: document.getElementById('willRent').value === 'yes',
+            registryMonth: getVal('registryMonth', false),
+            willRent: document.getElementById('willRent').value,
             rentStartYear: getVal('rentStartYear', false),
+            rentStartMonth: getVal('rentStartMonth', false),
             fitOutCost: getVal('fitOutCost'),
             monthlyRent: getVal('monthlyRent'),
-            rentIncrease: getVal('rentIncrease') / 100,
+            rentIncrease: getVal('rentIncrease'),
             advanceMaintenance: getVal('advanceMaintenance', false),
             monthlyMaintenance: getVal('monthlyMaintenance'),
-            propertyTaxPerc: getVal('propertyTax') / 100,
-            scenarios: Array.from(elements.scenariosContainer.children).map(div => ({
-                duration: parseInt(div.children[0].value),
-                salePricePerSqFt: parseFloat(div.children[1].value)
-            })),
+            propertyTax: getVal('propertyTax'),
+            scenarios: scenarios,
         };
     }
 
     // --- MAIN SIMULATION LOGIC ---
     function runSimulation() {
-        elements.welcomeMessage.style.display = 'none';
         elements.resultsDashboard.style.display = 'block';
         elements.resultsContent.style.display = 'none';
         elements.loader.style.display = 'flex';
-        
+        saveInputs();
         setTimeout(() => {
             const inputs = getInputs();
-            const results = calculateAllScenarios(inputs);
-            displayResults(results, inputs);
+            allScenarioResults = calculateAllScenarios(inputs);
+            displayResults(allScenarioResults, inputs);
             elements.loader.style.display = 'none';
             elements.resultsContent.style.display = 'block';
         }, 500);
@@ -419,8 +577,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function calculateAllScenarios(inputs) {
-        const { state, area, bsp, otherCharges, downPaymentPerc, interestRate, loanTenure } = inputs;
-
+        const { state, area, bsp, otherCharges, downPayment, interestRate, loanTenure, propertyTax } = inputs;
+        const downPaymentPerc = downPayment / 100;
+        
         const propertyCost = (area * bsp) + otherCharges;
         const stampDutyRate = stampDutyData[state]?.duty || 0.06;
         const regFeeRate = stampDutyData[state]?.reg || 0.01;
@@ -430,100 +589,98 @@ document.addEventListener('DOMContentLoaded', function () {
         const initialInvestment = propertyCost * downPaymentPerc;
         const loanAmount = propertyCost - initialInvestment;
 
-        const monthlyInterestRate = interestRate / 12;
+        const monthlyInterestRate = (interestRate/100) / 12;
         const loanTenureMonths = loanTenure * 12;
         const fullEMI = calculatePMT(monthlyInterestRate, loanTenureMonths, loanAmount);
+        
+        const investmentStartDate = new Date(inputs.investmentYear, inputs.investmentMonth - 1, 1);
 
         let scenarioResults = [];
-        let totalPreEMIPaid = 0;
 
         for (const scenario of inputs.scenarios) {
-            const investmentHorizon = scenario.duration;
-            let cashFlows = [-initialInvestment];
-            let yearlyCashFlows = [];
+            const exitDate = new Date(scenario.exitYear, scenario.exitMonth - 1, 1);
+            const investmentHorizonMonths = (exitDate.getFullYear() - investmentStartDate.getFullYear()) * 12 + (exitDate.getMonth() - investmentStartDate.getMonth()) + 1;
+            
+            let monthlyBreakdown = [];
             let loanBalance = loanAmount;
             
-            const constructionMonths = inputs.status === 'Under-Construction' ? inputs.constructionPeriod : 0;
-            const possessionYear = Math.ceil(constructionMonths / 12);
+            const possessionDate = new Date(investmentStartDate);
+            possessionDate.setMonth(possessionDate.getMonth() + (inputs.status === 'Under-Construction' ? inputs.constructionPeriod : 0));
+            
             let cumulativePreEmiInterest = 0;
             let disbursedAmount = 0;
-            let lastDisbursedPerc = 0;
 
-            for (let year = 1; year <= investmentHorizon; year++) {
-                let yearlyInflows = { rent: 0, taxSavings: 0, sale: 0 };
-                let yearlyOutflows = { emi: 0, preEmi: 0, maintenance: 0, propertyTax: 0, fitOut: 0, registry: 0 };
-                let yearlyInterestPaid = 0, yearlyPrincipalPaid = 0;
-
-                // Pre-EMI Period
-                if (year <= possessionYear && inputs.status === 'Under-Construction') {
-                    const startMonth = (year - 1) * 12 + 1;
-                    const endMonth = year * 12;
-                    let interestForYear = 0;
-                    for (let month = startMonth; month <= endMonth && month <= constructionMonths; month++) {
-                        const currentDisbursementPerc = inputs.disbursementSchedule.reduce((acc, dis) => (month >= dis.month ? dis.perc : acc), 0);
-                        if(currentDisbursementPerc > lastDisbursedPerc){
-                            disbursedAmount = loanAmount * currentDisbursementPerc;
-                            lastDisbursedPerc = currentDisbursementPerc;
-                        }
-                        interestForYear += disbursedAmount * monthlyInterestRate;
+            for(let m = 1; m <= investmentHorizonMonths; m++) {
+                const currentDate = new Date(investmentStartDate);
+                currentDate.setMonth(currentDate.getMonth() + m -1);
+                
+                const currentYear = currentDate.getFullYear();
+                const currentMonth = currentDate.getMonth() + 1;
+                
+                let monthData = { month: m, date: `${months[currentMonth-1]} ${currentYear}`, event: '-', emi: 0, rent: 0, otherCosts: 0, net: 0 };
+                
+                // EMI/PRE-EMI
+                if (currentDate < possessionDate) {
+                    const monthsIntoConstruction = m;
+                    const currentDisbursementPerc = inputs.disbursementSchedule.reduce((acc, dis) => (monthsIntoConstruction >= dis.month ? dis.perc : acc), 0);
+                    disbursedAmount = loanAmount * currentDisbursementPerc;
+                    monthData.emi = disbursedAmount * monthlyInterestRate;
+                    cumulativePreEmiInterest += monthData.emi;
+                    if(inputs.disbursementSchedule.some(d => d.month === monthsIntoConstruction)) monthData.event = `Disbursement`;
+                } else {
+                    const loanMonthsPaid = m - (inputs.status === 'Under-Construction' ? inputs.constructionPeriod : 0);
+                    if (loanMonthsPaid > 0 && loanMonthsPaid <= loanTenureMonths) {
+                        const interestPayment = loanBalance * monthlyInterestRate;
+                        loanBalance -= (fullEMI - interestPayment);
+                        monthData.emi = fullEMI;
                     }
-                    yearlyOutflows.preEmi = interestForYear;
-                    yearlyInterestPaid = interestForYear;
-                    cumulativePreEmiInterest += interestForYear;
-                } else { // Full EMI Period
-                    for (let m = 0; m < 12; m++) {
-                        if ((year - 1) * 12 + m < loanTenureMonths + constructionMonths) {
-                             const interestPayment = loanBalance * monthlyInterestRate;
-                             const principalPayment = fullEMI - interestPayment;
-                             yearlyInterestPaid += interestPayment;
-                             yearlyPrincipalPaid += principalPayment;
-                             loanBalance -= principalPayment;
-                        }
+                }
+                
+                // RENT
+                const rentStartDate = new Date(inputs.rentStartYear, inputs.rentStartMonth - 1, 1);
+                if (currentDate >= rentStartDate && inputs.willRent === 'yes') {
+                    const yearsRented = currentDate.getFullYear() - rentStartDate.getFullYear();
+                    monthData.rent = inputs.monthlyRent * Math.pow(1 + (inputs.rentIncrease/100), yearsRented);
+                }
+                
+                // OTHER COSTS
+                if(currentDate >= possessionDate){
+                    if (currentDate.getMonth() === possessionDate.getMonth() && currentDate.getFullYear() === possessionDate.getFullYear()) {
+                        monthData.otherCosts += inputs.advanceMaintenance * inputs.monthlyMaintenance;
                     }
-                    yearlyOutflows.emi = yearlyInterestPaid + yearlyPrincipalPaid;
+                    monthData.otherCosts += inputs.monthlyMaintenance;
                 }
-
-                // Rent, Maintenance, Tax, Fit-out, Registry
-                if (year >= inputs.rentStartYear && inputs.willRent) {
-                    yearlyInflows.rent = inputs.monthlyRent * 12 * Math.pow(1 + inputs.rentIncrease, year - inputs.rentStartYear);
-                }
-                if (year === inputs.rentStartYear && inputs.willRent) yearlyOutflows.fitOut = inputs.fitOutCost;
+                if (currentYear === inputs.registryYear && currentMonth === inputs.registryMonth) monthData.otherCosts += stampDuty + regFee;
+                if (currentYear === inputs.rentStartYear && currentMonth === inputs.rentStartMonth && inputs.willRent === 'yes') monthData.otherCosts += inputs.fitOutCost;
+                if (currentMonth === 1 && currentDate > possessionDate) monthData.otherCosts += propertyCost * (propertyTax / 100);
                 
-                if (year > possessionYear) {
-                    yearlyOutflows.maintenance = inputs.monthlyMaintenance * 12;
-                    if(year === possessionYear + 1) yearlyOutflows.maintenance += inputs.advanceMaintenance * inputs.monthlyMaintenance;
+                if (m === investmentHorizonMonths) monthData.event = 'Sale';
 
-                    yearlyOutflows.propertyTax = propertyCost * inputs.propertyTaxPerc;
-                }
-
-                if (year === inputs.registryYear) yearlyOutflows.registry = stampDuty + regFee;
-                
-                // Tax Savings Calculation (Disabled as per user request)
-                yearlyInflows.taxSavings = 0;
-
-                // Sale in the final year
-                if (year === investmentHorizon) {
-                    yearlyInflows.sale = (scenario.salePricePerSqFt * area) - loanBalance;
-                }
-                
-                const totalIn = Object.values(yearlyInflows).reduce((a, b) => a + b, 0);
-                const totalOut = Object.values(yearlyOutflows).reduce((a, b) => a + b, 0);
-                const netCashFlowForYear = totalIn - totalOut;
-
-                cashFlows.push(netCashFlowForYear);
-                yearlyCashFlows.push({ year, inflows: yearlyInflows, outflows: yearlyOutflows, net: netCashFlowForYear });
+                monthData.net = monthData.rent - monthData.emi - monthData.otherCosts;
+                monthlyBreakdown.push(monthData);
             }
             
-            totalPreEMIPaid = cumulativePreEmiInterest;
+            let cashFlows = [-initialInvestment];
+            for(let y=1; y <= Math.ceil(investmentHorizonMonths / 12); y++){
+                let yearlyNet = 0;
+                for(let m=(y-1)*12; m < y*12; m++){
+                    if(monthlyBreakdown[m]) yearlyNet += monthlyBreakdown[m].net;
+                }
+                if (y === Math.ceil(investmentHorizonMonths/12)) {
+                    yearlyNet += (scenario.salePricePerSqFt * area) - loanBalance;
+                }
+                cashFlows.push(yearlyNet);
+            }
+            
             const irr = calculateIRR(cashFlows) || 0;
             const netProfit = cashFlows.reduce((a, b) => a + b, 0);
-            const cagr = Math.pow((initialInvestment + netProfit) / initialInvestment, 1 / investmentHorizon) - 1;
+            const cagr = netProfit > -initialInvestment ? Math.pow((initialInvestment + netProfit) / initialInvestment, 1 / (investmentHorizonMonths/12)) - 1 : -1;
 
-            scenarioResults.push({ ...scenario, irr: irr * 100, netProfit, cagr: cagr * 100, yearlyCashFlows });
+            scenarioResults.push({ ...scenario, irr: irr * 100, netProfit, cagr: cagr * 100, monthlyBreakdown, totalPreEMIPaid: cumulativePreEmiInterest });
         }
         
         return {
-            costs: { propertyCost, stampDuty, regFee, initialInvestment, loanAmount, totalPreEMIPaid },
+            costs: { propertyCost, stampDuty, regFee, initialInvestment, loanAmount },
             loan: { fullEMI },
             scenarios: scenarioResults
         };
@@ -532,13 +689,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- DISPLAY RESULTS ---
     function displayResults(results, inputs) {
         elements.scenarioResults.innerHTML = '';
-        elements.scenarioSelector.innerHTML = '';
+        elements.scenarioSelectorForMonthly.innerHTML = '';
 
         results.scenarios.forEach((s, index) => {
             const card = document.createElement('div');
             card.className = 'result-card bg-indigo-50 p-5 rounded-lg text-center border-l-4 border-indigo-500';
             card.innerHTML = `
-                <h4 class="font-semibold text-lg text-indigo-800">Sell after ${s.duration} Yrs</h4>
+                <h4 class="font-semibold text-lg text-indigo-800">Scenario #${index + 1}: Sell in ${months[s.exitMonth-1]} ${s.exitYear}</h4>
                 <p class="text-3xl font-bold text-indigo-600 my-2">${s.irr.toFixed(2)}%</p>
                 <p class="text-sm text-gray-600 font-medium">IRR</p>
                 <hr class="my-3">
@@ -551,8 +708,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const option = document.createElement('option');
             option.value = index;
-            option.textContent = `Scenario: ${s.duration} Years`;
-            elements.scenarioSelector.appendChild(option);
+            option.textContent = `Scenario #${index + 1}`;
+            elements.scenarioSelectorForMonthly.appendChild(option);
         });
 
         const { costs, loan } = results;
@@ -560,39 +717,70 @@ document.addEventListener('DOMContentLoaded', function () {
             <p><strong>Property Cost:</strong> ₹${costs.propertyCost.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
             <p><strong>Your Initial Investment:</strong> ₹${costs.initialInvestment.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
             <p><strong>Loan Amount:</strong> ₹${costs.loanAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-            <p class="text-gray-600"><strong>Govt. Charges (in Yr ${inputs.registryYear}):</strong> ₹${(costs.stampDuty + costs.regFee).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
+            <p class="text-gray-600"><strong>Govt. Charges (in ${months[inputs.registryMonth-1]} ${inputs.registryYear}):</strong> ₹${(costs.stampDuty + costs.regFee).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
         `;
 
+        const totalPreEMIPaid = results.scenarios.length > 0 ? results.scenarios[0].totalPreEMIPaid : 0;
         elements.loanSummary.innerHTML = `
             <p><strong>Monthly EMI (Full):</strong> ₹${loan.fullEMI.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
-            ${costs.totalPreEMIPaid > 0 ? `<p class="text-red-600"><strong>Total Pre-EMI Paid:</strong> ₹${costs.totalPreEMIPaid.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>` : ''}
+            ${totalPreEMIPaid > 0 ? `<p class="text-red-600"><strong>Total Pre-EMI Paid:</strong> ₹${totalPreEMIPaid.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>` : ''}
         `;
         
-        displayCashFlow(results.scenarios[0].yearlyCashFlows);
-        elements.scenarioSelector.onchange = (e) => displayCashFlow(results.scenarios[e.target.value].yearlyCashFlows);
+        displayMonthlyCashFlow(results.scenarios[0].monthlyBreakdown);
+        elements.scenarioSelectorForMonthly.onchange = (e) => displayMonthlyCashFlow(results.scenarios[e.target.value].monthlyBreakdown);
     }
     
-    function displayCashFlow(yearlyCashFlows) {
-        elements.cashFlowTable.innerHTML = '';
-        const format = (val) => `₹${val.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+    function displayMonthlyCashFlow(monthlyBreakdown) {
+        elements.monthlyCashFlowTable.innerHTML = '';
+        const format = (val) => val.toLocaleString('en-IN', { maximumFractionDigits: 0 });
 
-        yearlyCashFlows.forEach(cf => {
+        monthlyBreakdown.forEach(cf => {
             const row = document.createElement('tr');
-            const totalIn = Object.values(cf.inflows).reduce((a,b) => a+b, 0);
-            const totalOut = Object.values(cf.outflows).reduce((a,b) => a+b, 0);
             row.className = cf.net >= 0 ? 'bg-green-50' : 'bg-red-50';
             row.innerHTML = `
-                <td class="px-2 py-2 whitespace-nowrap text-sm font-medium">Year ${cf.year}</td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-green-700">${format(totalIn)}</td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm text-red-700">${format(totalOut)}</td>
-                <td class="px-2 py-2 whitespace-nowrap text-sm font-bold ${cf.net >= 0 ? 'text-green-800' : 'text-red-800'}">${format(cf.net)}</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-700">${cf.date}</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-600">${cf.event}</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-right">${format(cf.emi)}</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-right text-green-700">${format(cf.rent)}</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm text-right text-red-700">${format(cf.otherCosts)}</td>
+                <td class="px-2 py-2 whitespace-nowrap text-sm font-bold text-right ${cf.net >= 0 ? 'text-green-800' : 'text-red-800'}">₹${format(cf.net)}</td>
             `;
-            elements.cashFlowTable.appendChild(row);
+            elements.monthlyCashFlowTable.appendChild(row);
         });
     }
+
+    function copyMonthlyDataToClipboard() {
+        const selectedIndex = elements.scenarioSelectorForMonthly.value;
+        if (!allScenarioResults || !allScenarioResults[selectedIndex]) return;
+
+        const data = allScenarioResults[selectedIndex].monthlyBreakdown;
+        let tsv = "Month_#\tDate\tEvent\tEMI_PreEMI_Paid\tRent_Received\tOther_Costs\tNet_Monthly_Flow\n";
+        
+        data.forEach(cf => {
+            tsv += `${cf.month}\t${cf.date}\t${cf.event}\t${cf.emi}\t${cf.rent}\t${cf.otherCosts}\t${cf.net}\n`;
+        });
+        
+        const tempTextarea = document.createElement('textarea');
+        tempTextarea.value = tsv;
+        document.body.appendChild(tempTextarea);
+        tempTextarea.select();
+        try {
+            document.execCommand('copy');
+            const originalText = elements.copyMonthlyDataBtn.innerHTML;
+            elements.copyMonthlyDataBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+            setTimeout(() => {
+                elements.copyMonthlyDataBtn.innerHTML = originalText;
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+            alert('Failed to copy data.');
+        }
+        document.body.removeChild(tempTextarea);
+    }
+
+    initialize();
 });
 </script>
 
 </body>
 </html>
-
